@@ -19,6 +19,7 @@ public class GameOfLife extends JPanel {
     JPanel startpanel;
     JButton[][] squares;
     JButton startButton;
+    JButton stopButton;
 
 
 
@@ -32,7 +33,12 @@ public class GameOfLife extends JPanel {
         startpanel = new JPanel();
         startpanel.add(startButton);
 
-        int delay = 800; //set how often the program updates in milliseconds
+        stopButton = new JButton("Stop");
+        startpanel.add(stopButton);
+
+        int delay = 500; //set how often the program updates in milliseconds
+
+        //updates the grid
         ActionListener updateGUI = (new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -48,7 +54,23 @@ public class GameOfLife extends JPanel {
                 }
             }
         });
-        new Timer(delay, updateGUI).start();
+        Timer timer = new Timer(delay, updateGUI);
+
+
+
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timer.start();
+            }
+        });
+
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timer.stop();
+            }
+        });
 
         squares = new JButton[numRow][numCol];
         panel = new JPanel();
