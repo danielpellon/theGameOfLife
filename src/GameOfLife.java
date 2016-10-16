@@ -1,20 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Scanner;
 
 /**
- * Created by daniel on 13-Oct-16.
+ * Created by Daniel and Karan 13-Oct-16.
  */
 public class GameOfLife extends JPanel {
     Cell[][] grid; //contains the grid of cells that represents the universe of the game of life
     String birthFilename = "birth.txt"; //name of the file where initial generation is stored
     int lifecounter;//counts the number of alive neighbors in a particular cell
-    int numRow;
-    int numCol;
+    int numRow; //stores number of rows from the start file
+    int numCol; //stores number of columns from
     JFrame frame;
     JPanel panel;
+    JPanel startpanel;
     JButton[][] squares;
+    JButton startButton;
 
 
 
@@ -22,10 +26,32 @@ public class GameOfLife extends JPanel {
     //builds the GUI
     void buildGUI(){
 
-        squares = new JButton[numRow][numCol];
         frame = new JFrame ("The Game of Life");
-        panel = new JPanel();
 
+        startButton = new JButton("Start");
+        startpanel = new JPanel();
+        startpanel.add(startButton);
+
+        int delay = 800; //set how often the program updates in milliseconds
+        ActionListener updateGUI = (new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                calculateNumNeighbors();
+                nextGeneration();
+
+                for(int i = 0; i < squares.length; i++){
+                    for (int j = 0; j < squares[0].length; j++){
+                        if(grid[i][j].isAlive()){
+                            squares[i][j].setBackground(Color.black);
+                        } else squares[i][j].setBackground(Color.white);
+                    }
+                }
+            }
+        });
+        new Timer(delay, updateGUI).start();
+
+        squares = new JButton[numRow][numCol];
+        panel = new JPanel();
         panel.setLayout(new GridLayout(numRow, numCol));
 
         for(int i = 0; i < squares.length; i++){
@@ -39,6 +65,7 @@ public class GameOfLife extends JPanel {
             }
         }
 
+        frame.add(startpanel, BorderLayout.SOUTH);
 
         frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -165,16 +192,9 @@ public class GameOfLife extends JPanel {
     void run(){
         readInitial();
         buildGUI();
-        print();
-        calculateNumNeighbors();
-        buildGUI();
-        nextGeneration();
-        System.out.print("\n");
-        buildGUI();
     }
 
     public static void main(String[] args) {
         new GameOfLife().run();
     }
 }
-
