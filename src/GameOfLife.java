@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 /**
  * Created by Daniel and Karan 13-Oct-16.
+ * Extension 1 implemented
  */
 public class GameOfLife extends JPanel {
     Cell[][] grid; //contains the grid of cells that represents the universe of the game of life
@@ -36,7 +37,7 @@ public class GameOfLife extends JPanel {
         stopButton = new JButton("Stop");
         startpanel.add(stopButton);
 
-        int delay = 500; //set how often the program updates in milliseconds
+        int delay = 200; //set how often the program updates in milliseconds
 
         //updates the grid
         ActionListener updateGUI = (new ActionListener() {
@@ -72,6 +73,7 @@ public class GameOfLife extends JPanel {
             }
         });
 
+
         squares = new JButton[numRow][numCol];
         panel = new JPanel();
         panel.setLayout(new GridLayout(numRow, numCol));
@@ -80,6 +82,26 @@ public class GameOfLife extends JPanel {
             for (int j = 0; j < squares[0].length; j++){
                 squares[i][j] = new JButton();
                 panel.add(squares[i][j]);
+
+                //Pressing the left mouse button on a cell will turn that cell from dead to alive or vice versa.
+                ActionListener squareclick = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        for(int i = 0; i < squares.length; i++){
+                            for (int j = 0; j < squares[0].length; j++){
+                                if (e.getSource() == squares[i][j] && grid[i][j].isAlive()){
+                                    grid[i][j].setAlive(false);
+                                    squares[i][j].setBackground(Color.white);
+                                } else if (e.getSource() == squares[i][j] && grid[i][j].isAlive() == false){
+                                    grid[i][j].setAlive(true);
+                                    squares[i][j].setBackground(Color.black);
+                                }
+                            }
+                        }
+                    }
+                };
+
+                squares[i][j].addActionListener(squareclick);
 
                 if(grid[i][j].isAlive()){
                     squares[i][j].setBackground(Color.black);
