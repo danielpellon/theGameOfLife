@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 /**
  * Created by Daniel and Karan 13-Oct-16.
- * Extension 1, 2 implemented
+ * Extensions 1, 2 and 3 implemented
  */
 public class GameOfLife extends JPanel {
     Cell[][] grid; //contains the grid of cells that represents the universe of the game of life
