@@ -2,12 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.Scanner;
 
 /**
  * Created by Daniel and Karan 13-Oct-16.
- * Extension 1 implemented
+ * Extension 1, 2 implemented
  */
 public class GameOfLife extends JPanel {
     Cell[][] grid; //contains the grid of cells that represents the universe of the game of life
@@ -18,9 +20,11 @@ public class GameOfLife extends JPanel {
     JFrame frame;
     JPanel panel;
     JPanel startpanel;
-    JButton[][] squares;
+    JButton[][] squares;//contains a grid of buttons, each of them representing a cell
     JButton startButton;
     JButton stopButton;
+    static boolean mousepressed;//keeps track of a mouse being presse
+    static boolean lastmousestate;//keeps track of the last changed state for drag extencion
 
 
 
@@ -57,8 +61,7 @@ public class GameOfLife extends JPanel {
         });
         Timer timer = new Timer(delay, updateGUI);
 
-
-
+        //starts the timer when start button is pressed
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,6 +69,7 @@ public class GameOfLife extends JPanel {
             }
         });
 
+        //stops the timer when the stop button is pressed
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,7 +87,8 @@ public class GameOfLife extends JPanel {
                 squares[i][j] = new JButton();
                 panel.add(squares[i][j]);
 
-                //Pressing the left mouse button on a cell will turn that cell from dead to alive or vice versa.
+                //Extension 1: Pressing the left mouse button on a cell will turn that cell from dead to
+                // alive or vice versa.
                 ActionListener squareclick = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -97,11 +102,62 @@ public class GameOfLife extends JPanel {
                                     squares[i][j].setBackground(Color.black);
                                 }
                             }
-                        }
+                       }
                     }
                 };
 
                 squares[i][j].addActionListener(squareclick);
+                squares[i][j].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        mousepressed = true;
+
+                        for(int i = 0; i < squares.length; i++) {
+                            for (int j = 0; j < squares[0].length; j++) {
+                                if(e.getSource() == squares[i][j]) {
+                                    lastmousestate = grid[i][j].isAlive();
+                                    if (grid[i][j].isAlive()) {
+                                        grid[i][j].setAlive(false);
+                                        squares[i][j].setBackground(Color.white);
+                                    } else if (!grid[i][j].isAlive()) {
+                                        grid[i][j].setAlive(true);
+                                        squares[i][j].setBackground(Color.black);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        mousepressed = false;
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        for(int i = 0; i < squares.length; i++) {
+                            for (int j = 0; j < squares[0].length; j++) {
+                                if (e.getSource() == squares[i][j] && mousepressed) {
+                                    if (lastmousestate) {
+                                        grid[i][j].setAlive(false);
+                                        squares[i][j].setBackground(Color.white);
+                                    } else if (!lastmousestate) {
+                                        grid[i][j].setAlive(true);
+                                        squares[i][j].setBackground(Color.black);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
 
                 if(grid[i][j].isAlive()){
                     squares[i][j].setBackground(Color.black);
@@ -219,6 +275,7 @@ public class GameOfLife extends JPanel {
 
 
     //generates a command line visualization of the program
+    //left in the code for testing purposes, but not used
     void print(){
         for(int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
