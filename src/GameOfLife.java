@@ -54,6 +54,17 @@ public class GameOfLife extends JPanel {
                     for (int j = 0; j < squares[0].length; j++){
                         if(grid[i][j].isAlive()){
                             squares[i][j].setBackground(Color.black);
+                            grid[i][j].fadeaway = false;
+                            grid[i][j].gencount = 0;
+                        } else if(grid[i][j].fadeaway){
+                            Color fading = new Color(80 + 10 * grid[i][j].gencount, 80 + 10 * grid[i][j].gencount,
+                                    80 + 10 * grid[i][j].gencount);
+                            squares[i][j].setBackground(fading);
+                            grid[i][j].gencount++;
+                            if(grid[i][j].gencount > 9){
+                                grid[i][j].fadeaway = false;
+                                grid[i][j].gencount = 0;
+                            }
                         } else squares[i][j].setBackground(Color.white);
                     }
                 }
@@ -230,7 +241,7 @@ public class GameOfLife extends JPanel {
     //creates the grid and reads the initial generation from the file with the
     //name stored in cd birthFilename
 
-    public void readInitial(){
+    public void readInitial() {
         try {
             File file = new File(birthFilename);
             Scanner scanner = new Scanner(file);
@@ -239,27 +250,68 @@ public class GameOfLife extends JPanel {
             grid = new Cell[numRow][numCol];
 
             //initializes every cell in the array
-            for(int i = 0; i < numRow; i++){
-                for (int j = 0; j < numCol; j++){
+            for (int i = 0; i < numRow; i++) {
+                for (int j = 0; j < numCol; j++) {
                     grid[i][j] = new Cell();
                 }
             }
 
-            if(scanner.hasNextLine()){
-                for(int i = 0; i < numRow; i++) {
+            if (scanner.hasNextLine()) {
+                for (int i = 0; i < numRow; i++) {
                     for (int j = 0; j < numCol; j++) {
                         if (scanner.next().equals("*")) {
                             grid[i][j].setAlive(true);
-                        }
-                        else {
+                        } else {
                             grid[i][j].setAlive(false);
                         }
                     }
                 }
             }
+            //handles the case of a file not being found, loads a default configuration
+        } catch (FileNotFoundException e) {
+            Scanner scanner = new Scanner("20 20 "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . * * * * * * * * . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . "
+                    + ". . . . . . . . . . . . . . . . . . . . ");
+            numRow = scanner.nextInt();
+            numCol = scanner.nextInt();
+            grid = new Cell[numRow][numCol];
 
-        } catch(FileNotFoundException e){
-            System.out.println("Fix yo file");
+            //initializes every cell in the array
+            for (int i = 0; i < numRow; i++) {
+                for (int j = 0; j < numCol; j++) {
+                    grid[i][j] = new Cell();
+                }
+            }
+
+            if (scanner.hasNextLine()) {
+                for (int i = 0; i < numRow; i++) {
+                    for (int j = 0; j < numCol; j++) {
+                        if (scanner.next().equals("*")) {
+                            grid[i][j].setAlive(true);
+                        } else {
+                            grid[i][j].setAlive(false);
+                        }
+                    }
+                }
+            }
         }
     }
 
